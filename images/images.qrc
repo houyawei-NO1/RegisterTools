@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>hyw.ico</file>
+        <file>iconfinder-icon.svg</file>
+        <file>images.qrc</file>
+        <file>logo.svg</file>
+        <file>RegisterTools.ico</file>
+        <file>smartisan.ico</file>
+        <file>smartisan.png</file>
+        <file>smartisanos.png</file>
+    </qresource>
+</RCC>

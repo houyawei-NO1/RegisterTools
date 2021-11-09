@@ -28,7 +28,7 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         searchEdit->show();
 
         QMenu *menu=new QMenu;
-        QAction *action=new QAction("action");
+        QAction *action=new QAction("YiAnKang");
         menu->addAction(action);
         titlebar()->setMenu(menu);
 
@@ -38,9 +38,9 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         DPushButton *updata =new DPushButton();
 
 //        titlebar()->setIcon(QIcon::fromTheme("deepin-launcher"));
+        titlebar()->setIcon(QIcon(":/RegisterTools.ico"));
 
         connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,this,&RegisterTools::setTheme);
-
         QVBoxLayout *vlayout =new QVBoxLayout(w);
         QHBoxLayout *h1layout = new QHBoxLayout(w);
         QHBoxLayout *h2layout = new QHBoxLayout(w);
@@ -137,7 +137,7 @@ RegisterTools::RegisterTools(DMainWindow *parent)
             qDebug()<<"打开文件"<<fileName<<endl;
             for(Row=1;Row<110;Row++)
             {
-            progressbarid->setValue(Row);
+
             A_Row = "A" + QString::number(Row);
             B_Row = "B" + QString::number(Row);
             C_Row = "C" + QString::number(Row);
@@ -145,6 +145,7 @@ RegisterTools::RegisterTools(DMainWindow *parent)
             MAC = xlsx.read(A_Row).toString().remove(":").remove("\"").remove(" ");
             if(!(MAC.isNull()))
             {
+             progressbarid->setValue(qRound(double(Row/110.0)*100));
              qDebug()<<MAC;
              CheckDeviceID(MAC);
              QEventLoop loop;
@@ -153,6 +154,7 @@ RegisterTools::RegisterTools(DMainWindow *parent)
             }
             else
             {
+             progressbarid->setValue(100);
             qDebug()<<"设备ID获取结束";
             return;
             }
@@ -186,24 +188,26 @@ RegisterTools::RegisterTools(DMainWindow *parent)
             qDebug()<<"打开文件"<<fileName<<endl;
             for(Row=1;Row<110;Row++)
             {
-            progressbar->setValue(Row);
+
             A_Row = "A" + QString::number(Row);
             B_Row = "B" + QString::number(Row);
             C_Row = "C" + QString::number(Row);
             D_Row = "D" + QString::number(Row);
             DEV = xlsx.read(C_Row).toString();
-            if(!(C_Row.isNull()))
+            if(!(DEV.isNull()))
             {
+             progressbar->setValue(qRound(double(Row/110.0)*100));
              qDebug()<<DEV;
              getBasicSettings(DEV);
              QEventLoop loop;
              QTimer::singleShot(1500,&loop,SLOT(quit()));
              loop.exec();
-             WuhanHefei(DEV,DEV);
+             WuhanHefei(DEV,xlsx.read(D_Row).toString());
             }
             else
             {
-            qDebug()<<"设备ID获取结束";
+            progressbar->setValue(100);
+            qDebug()<<"数据上传结束";
             return;
             }
             }
@@ -382,4 +386,8 @@ void RegisterTools::WuhanHefei(const QString &deviceid,const QString &comid)
      qDebug()<<jsonDoc_whhf<<endl;
      QNetworkReply *reply = qnamup->post(qnr1, jsonDoc_whhf.toJson());
      QNetworkReply *reply2 = qnamup->post(qnr2, jsonDoc_whhf.toJson());
+     if (reply->isFinished())
+         reply->deleteLater();
+     if (reply2->isFinished())
+         reply2->deleteLater();
 }

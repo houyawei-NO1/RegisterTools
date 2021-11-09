@@ -11,15 +11,15 @@ int main(int argc, char *argv[])
 {
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     DApplication a(argc, argv);
-    a.setOrganizationName("deepin");
-    a.setApplicationName("dtk_Smartisanos图标下载助手");
-    a.setApplicationVersion("0.7");
-    a.setProductIcon(QIcon(":/images/smartisan.ico"));
-    a.setProductName("DTK_Smartisanos图标下载助手");
-    a.setApplicationDescription("这是一个DTK_Smartisanos图标下载助手应用");
+    a.setOrganizationName("YiAnKang");
+    a.setApplicationName("hyw_yiankang_registertools");
+    a.setApplicationVersion("0.2");
+    a.setProductIcon(QIcon(":/RegisterTools.ico"));
+    a.setProductName("HYW_RegisterTools");
+    a.setApplicationDescription("用于申请设备ID及模拟数据上传");
 
     a.loadTranslator();
-    a.setApplicationDisplayName(QCoreApplication::translate("Main", "DtkSerialport"));
+    a.setApplicationDisplayName(QCoreApplication::translate("Main", "RegisterTools"));
 
 
 //    DApplicationSettings as;
