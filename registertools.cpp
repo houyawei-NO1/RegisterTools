@@ -133,11 +133,14 @@ RegisterTools::RegisterTools(DMainWindow *parent)
 
         //getid button
         connect(getid,&DPushButton::clicked,this,[ = ]{
+            QTimer *timer;
+            timer = new QTimer(this);
+            timer->setInterval(1500);
+            timer->start();
+            Row=0;
+            connect(timer,&QTimer::timeout,this,[ = ]{
             QXlsx::Document xlsx(fileName);
-            qDebug()<<"打开文件"<<fileName<<endl;
-            for(Row=1;Row<110;Row++)
-            {
-
+            Row++;
             A_Row = "A" + QString::number(Row);
             B_Row = "B" + QString::number(Row);
             C_Row = "C" + QString::number(Row);
@@ -148,17 +151,16 @@ RegisterTools::RegisterTools(DMainWindow *parent)
              progressbarid->setValue(qRound(double(Row/110.0)*100));
              qDebug()<<MAC;
              CheckDeviceID(MAC);
-             QEventLoop loop;
-             QTimer::singleShot(1500,&loop,SLOT(quit()));
-             loop.exec();
             }
             else
             {
              progressbarid->setValue(100);
-            qDebug()<<"设备ID获取结束";
+             timer->stop();
+             delete  timer;
+             qDebug()<<"设备ID获取结束";
             return;
             }
-            }
+            });
         });
 
         //hefei sync button
@@ -184,11 +186,16 @@ RegisterTools::RegisterTools(DMainWindow *parent)
 
         //updata button
         connect(updata,&DPushButton::clicked,this,[ = ]{
-            QXlsx::Document xlsx(fileName);
-            qDebug()<<"打开文件"<<fileName<<endl;
-            for(Row=1;Row<110;Row++)
-            {
 
+            qDebug()<<"打开文件"<<fileName<<endl;
+            QTimer *timer;
+            timer = new QTimer(this);
+            timer->setInterval(1500);
+            timer->start();
+            Row=0;
+            connect(timer,&QTimer::timeout,this,[ = ]{
+            QXlsx::Document xlsx(fileName);
+            Row++;
             A_Row = "A" + QString::number(Row);
             B_Row = "B" + QString::number(Row);
             C_Row = "C" + QString::number(Row);
@@ -199,19 +206,18 @@ RegisterTools::RegisterTools(DMainWindow *parent)
              progressbar->setValue(qRound(double(Row/110.0)*100));
              qDebug()<<DEV;
              getBasicSettings(DEV);
-             QEventLoop loop;
-             QTimer::singleShot(1500,&loop,SLOT(quit()));
-             loop.exec();
              WuhanHefei(DEV,xlsx.read(D_Row).toString());
             }
             else
             {
             progressbar->setValue(100);
             qDebug()<<"数据上传结束";
+            timer->stop();
+            delete  timer;
             return;
             }
-            }
         });
+      });
 
 }
 

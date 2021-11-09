@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     DApplication a(argc, argv);
     a.setOrganizationName("YiAnKang");
     a.setApplicationName("hyw_yiankang_registertools");
-    a.setApplicationVersion("0.2");
+    a.setApplicationVersion("0.3");
     a.setProductIcon(QIcon(":/RegisterTools.ico"));
     a.setProductName("HYW_RegisterTools");
     a.setApplicationDescription("用于申请设备ID及模拟数据上传");
