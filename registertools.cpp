@@ -47,15 +47,17 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         QHBoxLayout *h3layout = new QHBoxLayout(w);
         QHBoxLayout *h4layout = new QHBoxLayout(w);
         QHBoxLayout *h5layout = new QHBoxLayout(w);
+        QHBoxLayout *h6layout = new QHBoxLayout(w);
+        QHBoxLayout *h7layout = new QHBoxLayout(w);
 
         DLabel *text1 = new DLabel;
         text1->setText("1:选择MAC表格");
         text1->setAlignment(Qt::AlignLeft);
         DLineEdit *locationLineEdit = new DLineEdit;
         filelocation->setText("选择");
-        h1layout->addWidget(text1,1);
-        h1layout->addWidget(locationLineEdit,2);
-        h1layout->addWidget(filelocation,1);
+        h1layout->addWidget(text1,2);
+        h1layout->addWidget(locationLineEdit,4);
+        h1layout->addWidget(filelocation,2);
 
         auto progressbarid = new DProgressBar();
         progressbarid->setTextVisible(true);
@@ -65,24 +67,24 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         text2->setText("2:获取设备ID");
         text2->setAlignment(Qt::AlignLeft);
         getid->setText("获取");
-        h2layout->addWidget(text2,1);
-        h2layout->addWidget(progressbarid,2);
-        h2layout->addWidget(getid,1);
+        h2layout->addWidget(text2,2);
+        h2layout->addWidget(progressbarid,4);
+        h2layout->addWidget(getid,2);
 
         DLabel *text3 = new DLabel;
         text3->setText("3:手动绑定设备");
         text3->setAlignment(Qt::AlignLeft);
-        h3layout->addWidget(text3,1);
-        h3layout->addStretch(3);
+        h3layout->addWidget(text3,2);
+        h3layout->addStretch(6);
 
 
         DLabel *text4 = new DLabel;
         text4->setText("4:合肥同步");
         text4->setAlignment(Qt::AlignLeft);
         hefeisync->setText("同步");
-        h4layout->addWidget(text4,1);
-        h4layout->addStretch(2);
-        h4layout->addWidget(hefeisync,1);
+        h4layout->addWidget(text4,2);
+        h4layout->addStretch(4);
+        h4layout->addWidget(hefeisync,2);
 
 
         auto progressbar = new DProgressBar();
@@ -93,9 +95,35 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         text5->setText("5:数据上传");
         text5->setAlignment(Qt::AlignLeft);
         updata->setText("模拟");
-        h5layout->addWidget(text5,1);
-        h5layout->addWidget(progressbar,2);
-        h5layout->addWidget(updata,1);
+        h5layout->addWidget(text5,2);
+        h5layout->addWidget(progressbar,4);
+        h5layout->addWidget(updata,2);
+
+        DLabel *text6 = new DLabel();
+        text6->setText("NO1:二维码处理");
+        text6->setAlignment(Qt::AlignLeft);
+        DLineEdit *picLineEdit = new DLineEdit;
+        DPushButton *choosebutton =new DPushButton();
+        choosebutton->setText("选择");
+        DPushButton *chooseokbutton =new DPushButton();
+        chooseokbutton->setText("生成");
+        h6layout->addWidget(text6,2);
+        h6layout->addWidget(picLineEdit,4);
+        h6layout->addWidget(choosebutton,1);
+        h6layout->addWidget(chooseokbutton,1);
+
+        DLabel *text7 = new DLabel();
+        text7->setText("NO2:批量二维码");
+        text7->setAlignment(Qt::AlignLeft);
+        DLineEdit *picallLineEdit = new DLineEdit;
+        DPushButton *chooseallbutton =new DPushButton();
+        chooseallbutton->setText("选择");
+        DPushButton *chooseallokbutton =new DPushButton();
+        chooseallokbutton->setText("生成");
+        h7layout->addWidget(text7,2);
+        h7layout->addWidget(picallLineEdit,4);
+        h7layout->addWidget(chooseallbutton,1);
+        h7layout->addWidget(chooseallokbutton,1);
 
         connect(progressbar, &DProgressBar::valueChanged, this, [=](int value){
                 progressbar->setFormat(QString("已完成%1%").arg(value));
@@ -116,6 +144,11 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         vlayout->addStretch(1);
         vlayout->addLayout(h5layout);
         vlayout->addStretch(1);
+        vlayout->addLayout(h6layout);
+        vlayout->addStretch(1);
+        vlayout->addLayout(h7layout);
+        vlayout->addStretch(1);
+
 
         qnam = new QNetworkAccessManager();
         qnamup = new QNetworkAccessManager();
@@ -125,7 +158,7 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         //file location choose button
         connect(filelocation, &DPushButton::clicked, this, [ = ] {
         fileName = QFileDialog::getOpenFileName(this, tr("打开表格"),
-                                                              "/home",
+                                                              "/home/houyawei/Desktop",
                                                                tr("打开表格 (*.xlsx)"));
         locationLineEdit->setText(fileName);
 
@@ -218,6 +251,38 @@ RegisterTools::RegisterTools(DMainWindow *parent)
             }
         });
       });
+
+        //picchoosebutton
+        connect(choosebutton,&DPushButton::clicked,this,[ = ]{
+
+            picfileName = QFileDialog::getOpenFileName(this, tr("打开图片"),
+                                                                  "/home/houyawei/Desktop",
+                                                                   tr("打开图片 (*.png *.jpg)"));
+            picLineEdit->setText(picfileName);
+        });
+
+        //todo picchooseokbutton
+        connect(chooseokbutton,&DPushButton::clicked,this,[ = ]{
+           QImage image(picLineEdit->text());
+           QPainter p;
+           if(!p.begin(&image)) qDebug()<<"open failed"<<endl;
+
+           p.setPen(QPen(Qt::red));
+           p.setFont(QFont("Times", 30, QFont::Light));
+           QString deviceid = picLineEdit->text().mid(picLineEdit->text().lastIndexOf("/")+1,10);
+           QString deviceid_left =deviceid.left(5);
+           QString deviceid_right =deviceid.right(5);
+           p.drawText(0, 25, deviceid_left);
+           p.drawText(198, 25, deviceid_right);
+           p.end();
+
+           QString newimage = picLineEdit->text().mid(0,picLineEdit->text().lastIndexOf("."))+"_new.jpg";
+           qDebug()<<newimage<<endl;
+           image.save(newimage);
+
+        });
+        //todo picchooseallbutton
+        //todo picchooseallokbutton
 
 }
 

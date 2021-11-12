@@ -27,6 +27,8 @@
 #include <QTimer>
 #include <QtXlsx>
 #include <DProgressBar>
+#include <QImage>
+#include <QPainter>
 
 DWIDGET_USE_NAMESPACE
 QT_BEGIN_NAMESPACE
@@ -38,7 +40,7 @@ class RegisterTools : public DMainWindow
 
 public:
     RegisterTools(DMainWindow *parent = nullptr);
-    QString fileName;
+    QString fileName,picfileName;
     int Row,Col;
     void CheckDeviceID(const QString &strmac);
     void getBasicSettings(const QString &deviceid);
