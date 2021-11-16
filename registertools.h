@@ -56,6 +56,7 @@ private:
     void setTheme(DGuiApplicationHelper::ColorType);
     QNetworkAccessManager* qnam;
     QNetworkAccessManager* qnamup;
+    bool SignleDev = false;
 
 private slots:
     void finishedSlot(QNetworkReply* reply);

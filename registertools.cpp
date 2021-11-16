@@ -49,6 +49,7 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         QHBoxLayout *h5layout = new QHBoxLayout(w);
         QHBoxLayout *h6layout = new QHBoxLayout(w);
         QHBoxLayout *h7layout = new QHBoxLayout(w);
+        QHBoxLayout *h8layout = new QHBoxLayout(w);
 
         DLabel *text1 = new DLabel;
         text1->setText("1:选择MAC表格");
@@ -125,6 +126,16 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         h7layout->addWidget(chooseallbutton,1);
         h7layout->addWidget(chooseallokbutton,1);
 
+        DLabel *text8 = new DLabel();
+        text8->setText("NO3:盒子MAC转设备号");
+        text8->setAlignment(Qt::AlignLeft);
+        DLineEdit *macLineEdit = new DLineEdit();
+        DPushButton *macbutton = new DPushButton();
+        macbutton->setText("获取");
+        h8layout->addWidget(text8,2);
+        h8layout->addWidget(macLineEdit,4);
+        h8layout->addWidget(macbutton,2);
+
 
         connect(progressbar, &DProgressBar::valueChanged, this, [=](int value){
                 progressbar->setFormat(QString("已完成%1%").arg(value));
@@ -144,10 +155,12 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         vlayout->addLayout(h4layout);
         vlayout->addStretch(1);
         vlayout->addLayout(h5layout);
-        vlayout->addStretch(2);
+        vlayout->addStretch(3);
         vlayout->addLayout(h6layout);
         vlayout->addStretch(1);
         vlayout->addLayout(h7layout);
+        vlayout->addStretch(1);
+        vlayout->addLayout(h8layout);
         vlayout->addStretch(2);
 
 
@@ -283,6 +296,18 @@ RegisterTools::RegisterTools(DMainWindow *parent)
             //editImages(picallLineEdit->text());
 
         });
+        //getid signle button
+        connect(macbutton,&DPushButton::clicked,this,[ = ]{
+            SignleDev = true;
+            MAC=macLineEdit->text().toUpper().remove(":").remove("\"").remove(" ").remove("\r").remove("\n");
+            qDebug()<<MAC;
+            CheckDeviceID(MAC);
+             QTimer::singleShot(1.5 * 1000,this,[=]{
+                 macLineEdit->setText(DEV);
+                 SignleDev = false;
+             });
+
+        });
 
 }
 
@@ -392,7 +417,7 @@ void RegisterTools::finishedSlot(QNetworkReply *reply)
 
                      {
                          QJsonObject obj = jsonDoc.object();
-                         if(obj.contains(QString("picStream")))
+                         if(obj.contains(QString("picStream")) && SignleDev == false)
                          {
  //                            qDebug() << "in picStream...";
 
@@ -402,6 +427,12 @@ void RegisterTools::finishedSlot(QNetworkReply *reply)
                              xlsx.write(B_Row,MAC);
                              xlsx.write(C_Row,m_strDeviceID);
                              xlsx.save();
+                         }
+                         else if(obj.contains(QString("picStream")) && SignleDev == true)
+                         {
+                              QString m_strDeviceID = obj.value("deviceId").toString();
+                              DEV = m_strDeviceID;
+                               qDebug()<<"signal dev 此设备号为："<<DEV;
                          }
                          if(obj.contains(QString("companyCode")))
                          {
