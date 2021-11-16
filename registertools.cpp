@@ -125,6 +125,7 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         h7layout->addWidget(chooseallbutton,1);
         h7layout->addWidget(chooseallokbutton,1);
 
+
         connect(progressbar, &DProgressBar::valueChanged, this, [=](int value){
                 progressbar->setFormat(QString("已完成%1%").arg(value));
             });
@@ -133,7 +134,7 @@ RegisterTools::RegisterTools(DMainWindow *parent)
             });
 
 
-        vlayout->addStretch(1);
+        vlayout->addStretch(2);
         vlayout->addLayout(h1layout);
         vlayout->addStretch(1);
         vlayout->addLayout(h2layout);
@@ -143,11 +144,11 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         vlayout->addLayout(h4layout);
         vlayout->addStretch(1);
         vlayout->addLayout(h5layout);
-        vlayout->addStretch(1);
+        vlayout->addStretch(2);
         vlayout->addLayout(h6layout);
         vlayout->addStretch(1);
         vlayout->addLayout(h7layout);
-        vlayout->addStretch(1);
+        vlayout->addStretch(2);
 
 
         qnam = new QNetworkAccessManager();
@@ -261,28 +262,27 @@ RegisterTools::RegisterTools(DMainWindow *parent)
             picLineEdit->setText(picfileName);
         });
 
-        //todo picchooseokbutton
+        //picchooseokbutton
         connect(chooseokbutton,&DPushButton::clicked,this,[ = ]{
-           QImage image(picLineEdit->text());
-           QPainter p;
-           if(!p.begin(&image)) qDebug()<<"open failed"<<endl;
 
-           p.setPen(QPen(Qt::red));
-           p.setFont(QFont("Times", 30, QFont::Light));
-           QString deviceid = picLineEdit->text().mid(picLineEdit->text().lastIndexOf("/")+1,10);
-           QString deviceid_left =deviceid.left(5);
-           QString deviceid_right =deviceid.right(5);
-           p.drawText(0, 25, deviceid_left);
-           p.drawText(198, 25, deviceid_right);
-           p.end();
-
-           QString newimage = picLineEdit->text().mid(0,picLineEdit->text().lastIndexOf("."))+"_new.jpg";
-           qDebug()<<newimage<<endl;
-           image.save(newimage);
+            editImages(picLineEdit->text());
+            editlongImages(picLineEdit->text());
 
         });
-        //todo picchooseallbutton
+        //picchooseallbutton
+        connect(chooseallbutton,&DPushButton::clicked,this,[ = ]{
+
+            picfileallName = QFileDialog::getExistingDirectory(this, tr("打开图片文件夹"),
+                                                                  "/home/houyawei/Desktop");
+            picallLineEdit->setText(picfileallName);
+        });
         //todo picchooseallokbutton
+        connect(chooseallokbutton,&DPushButton::clicked,this,[ = ]{
+
+            qDebug()<<getfiles(picallLineEdit->text());
+            //editImages(picallLineEdit->text());
+
+        });
 
 }
 
@@ -461,4 +461,90 @@ void RegisterTools::WuhanHefei(const QString &deviceid,const QString &comid)
          reply->deleteLater();
      if (reply2->isFinished())
          reply2->deleteLater();
+}
+QStringList RegisterTools::getfiles(const QString &dir_path)
+{
+    QStringList get_files;
+    QDir dir(dir_path);
+    if(!dir.exists())
+    {
+        qDebug() << "it is not true dir_path";
+    }
+
+    /*设置过滤参数，QDir::NoDotAndDotDot表示不会去遍历上层目录*/
+    QFileInfoList info_list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+     qDebug() << "dir_path num:"<<info_list.count();
+    for(int i= 0 ; i< info_list.count(); i++)
+    {
+        QFileInfo info = info_list.at(i);
+        if(info.isDir())
+        {
+            /*找出下层目录的绝对路径*/
+            QString sub_dir  = info.absoluteFilePath();
+            /*递归*/
+            QStringList get_next_files = getfiles(sub_dir);
+
+            get_files.append(get_next_files);
+        }
+        else
+        {
+            QString file_name = info.absoluteFilePath();
+            editImages(file_name);
+            editlongImages(file_name);
+            get_files.append(file_name);
+        }
+    }
+
+    return get_files;
+}
+
+void RegisterTools::editImages(const QString &imagefile)
+{
+    QImage image(imagefile);
+    QPainter p;
+    if(!p.begin(&image)) qDebug()<<"open failed"<<endl;
+
+    p.setPen(QPen(Qt::red));
+    p.setFont(QFont("Times", 30, QFont::Light));
+    QString deviceid = imagefile.mid(imagefile.lastIndexOf("/")+1,10);
+    QString deviceid_left =deviceid.left(5);
+    QString deviceid_right =deviceid.right(5);
+    p.drawText(0, 25, deviceid_left);
+    p.drawText(198, 25, deviceid_right);
+
+    p.end();
+
+    QString newimage = imagefile.mid(0,imagefile.lastIndexOf("."))+"_new.jpg";
+    qDebug()<<newimage<<endl;
+    image.save(newimage);
+}
+void RegisterTools::editlongImages(const QString &imagefile)
+{
+    QImage *saveImage = new QImage(QSize(280,500),QImage::Format_RGB888);
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    saveImage->fill(QColor(Qt::white).rgb());
+    saveImage->save(&buffer,"PNG");
+    buffer.close();
+
+    QImage image(imagefile);
+    QPainter p(saveImage);
+    if(!p.begin(&image)) qDebug()<<"open failed"<<endl;
+
+    p.setPen(QPen(Qt::red));
+    p.setFont(QFont("Times", 38, QFont::Light));
+    QString deviceid = imagefile.mid(imagefile.lastIndexOf("/")+1,10);
+    p.drawText(0, 300+25, deviceid);
+    QString devicename = "YAK-40  4g";
+    p.drawText(20, 360+25, devicename);
+    p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    p.drawImage(0,0,image);
+
+    p.end();
+
+    QString newimage = imagefile.mid(0,imagefile.lastIndexOf("."))+"_newlong.jpg";
+    qDebug()<<newimage<<endl;
+    saveImage->save(newimage);
+
 }

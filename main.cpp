@@ -16,7 +16,8 @@ int main(int argc, char *argv[])
     a.setApplicationVersion("0.4");
     a.setProductIcon(QIcon(":/RegisterTools.ico"));
     a.setProductName("HYW_RegisterTools");
-    a.setApplicationDescription("用于申请设备ID及模拟数据上传");
+    a.setApplicationDescription("用于申请设备ID及模拟数据上传\n"
+                                "小程序码处理");
 
     a.loadTranslator();
     a.setApplicationDisplayName(QCoreApplication::translate("Main", "RegisterTools"));

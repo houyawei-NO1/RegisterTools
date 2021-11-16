@@ -40,11 +40,14 @@ class RegisterTools : public DMainWindow
 
 public:
     RegisterTools(DMainWindow *parent = nullptr);
-    QString fileName,picfileName;
+    QString fileName,picfileName,picfileallName;
     int Row,Col;
     void CheckDeviceID(const QString &strmac);
     void getBasicSettings(const QString &deviceid);
     void WuhanHefei(const QString &deviceid,const QString &comid);
+    void editImages(const QString &imagefile);
+    void editlongImages(const QString &imagefile);
+    QStringList getfiles(const QString &dir_path);
     QString A_Row,B_Row,C_Row,D_Row,MAC,DEV;
     ~RegisterTools();
 
@@ -53,6 +56,7 @@ private:
     void setTheme(DGuiApplicationHelper::ColorType);
     QNetworkAccessManager* qnam;
     QNetworkAccessManager* qnamup;
+
 private slots:
     void finishedSlot(QNetworkReply* reply);
 
