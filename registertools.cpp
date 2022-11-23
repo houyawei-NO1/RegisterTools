@@ -228,7 +228,7 @@ RegisterTools::RegisterTools(DMainWindow *parent)
         );
 
 //            manager->get(QNetworkRequest(QUrl("https://www.baidu.com")));
-            manager->get(QNetworkRequest(QUrl("http://p.hibao789.com/index/api/devicebasicinfo")));
+            manager->get(QNetworkRequest(QUrl("http://xxxxxx/index/api/devicebasicinfo")));
         });
 
         //updata button
@@ -327,7 +327,7 @@ void RegisterTools::setTheme(DGuiApplicationHelper::ColorType theme)
 void RegisterTools::CheckDeviceID(const QString &strmac)
 {
 
-    QString url("http://h.hibao789.com/sleep/public/index.php/device/monitoringdata/getDeviceQRcode");
+    QString url("http://xxxxxxx/sleep/public/index.php/device/monitoringdata/getDeviceQRcode");
     const QUrl aurl(url);
     QNetworkRequest qnr(aurl);
     qnr.setRawHeader("Content-Type", "application/json;charset=utf8");
@@ -371,7 +371,7 @@ void RegisterTools::CheckDeviceID(const QString &strmac)
 void RegisterTools::getBasicSettings(const QString &deviceid)
 {
     qDebug()<<"getBasicSettings"<<deviceid;
-    QString url("http://h.hibao789.com/sleep/public/index.php/device/monitoringdata/getDeviceBasicSettings");
+    QString url("http://xxxxxxxx/sleep/public/index.php/device/monitoringdata/getDeviceBasicSettings");
 
     const QUrl aurl(url);
     QNetworkRequest qnr(aurl);
@@ -458,7 +458,7 @@ void RegisterTools::finishedSlot(QNetworkReply *reply)
 void RegisterTools::WuhanHefei(const QString &deviceid,const QString &comid)
 {
 
-     QString url("http://h.hibao789.com/sleep/public/index.php/device/monitoringdata/dataCollection");
+     QString url("http://h.xxxxxxx.com/sleep/public/index.php/device/monitoringdata/dataCollection");
      QNetworkRequest qnr1(url);
      qnr1.setRawHeader("Content-Type", "application/json;charset=utf8");
      QString url2("http://t.hibao789.com/api/dataCollection.php");
